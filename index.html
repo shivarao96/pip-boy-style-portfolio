@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Pip-Boy | Shiva Rao</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+        }
+
+        body {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .scene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tv-shell {
+            min-width: 320px;
+            max-width: 1280px;
+            width: 80dvw;
+            padding: 18px;
+            background: radial-gradient(ellipse 70% 60% at 38% 35%,
+                    #3e4c37 0%,
+                    #2e3c28 35%,
+                    #1f2c1b 65%,
+                    #182214 100%);
+            border-radius: 24px;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+            position: relative;
+            box-shadow:
+                /* subtle top-left light catch */
+                inset 0 2px 5px rgba(255, 255, 255, 0.055),
+                inset 2px 0 5px rgba(255, 255, 255, 0.02),
+                /* inner edge darkening */
+                inset 0 -5px 20px rgba(0, 0, 0, 0.45),
+                inset -4px 0 12px rgba(0, 0, 0, 0.25),
+                inset 4px 0 12px rgba(0, 0, 0, 0.15),
+                /* outer drop shadow */
+                0 20px 60px rgba(0, 0, 0, 0.9),
+                0 6px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .bezel-outer {
+            border-radius: 18px;
+            background: radial-gradient(ellipse 65% 55% at 36% 33%,
+                    #283022 0%,
+                    #1b2517 40%,
+                    #121a0f 100%);
+            padding: 12px;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+                inset 3px 3px 12px rgba(0, 0, 0, 0.75),
+                inset -2px -2px 8px rgba(0, 0, 0, 0.4),
+                /* outer edge of this ring catches slight highlight */
+                0 0 0 1px rgba(60, 80, 50, 0.25);
+        }
+
+        .screen {
+            width: 100%;
+            height: 80dvh;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.97),
+                inset 0 0 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .control-bar {
+            position: relative;
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(180deg,
+                    #1e2519 0%,
+                    #181e14 50%,
+                    #141910 100%);
+            border-radius: 0 0 6px 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 0;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.035);
+        }
+
+        /* ── Screw ── */
+        .screw {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 36% 32%, #38412f, #1a2015);
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.75),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.03),
+                0 1px 3px rgba(0, 0, 0, 0.5);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .screw::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 18%;
+            right: 18%;
+            height: 1.5px;
+            background: rgba(0, 0, 0, 0.6);
+            transform: translateY(-50%);
+        }
+
+        .screw::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 18%;
+            bottom: 18%;
+            width: 1.5px;
+            background: rgba(0, 0, 0, 0.45);
+            transform: translateX(-50%);
+        }
+
+        /* ── Vents ── */
+        .vents {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0 14px;
+        }
+
+        .vent {
+            width: 3px;
+            height: 22px;
+            background: linear-gradient(180deg,
+                    #0a0e08 0%,
+                    #161b12 50%,
+                    #0a0e08 100%);
+            border-radius: 1px;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.95);
+        }
+
+        /* ── Right side: POWER label + button ── */
+        .power-area {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .power-label {
+            font-family: 'Courier New', monospace;
+            font-size: 7px;
+            letter-spacing: 1.8px;
+            color: #4c5844;
+            text-transform: uppercase;
+        }
+
+        .power-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background: radial-gradient(circle at 40% 32%,
+                    #f0b030 0%,
+                    #c08018 40%,
+                    #885510 70%,
+                    #5a3808 100%);
+            box-shadow: 0 0 8px rgba(200, 130, 15, 0.6),
+                0 0 20px rgba(180, 110, 10, 0.25),
+                inset 0 1px 3px rgba(255, 225, 110, 0.4),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: glow 2.5s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(200, 130, 15, 0.6),
+                    0 0 20px rgba(180, 110, 10, 0.25),
+                    inset 0 1px 3px rgba(255, 225, 110, 0.4),
+                    inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 14px rgba(220, 150, 20, 0.9),
+                    0 0 32px rgba(190, 120, 10, 0.4),
+                    inset 0 1px 3px rgba(255, 225, 110, 0.4),
+                    inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        .power-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -52%);
+            width: 10px;
+            height: 10px;
+            border: 2px solid rgba(255, 210, 80, 0.8);
+            border-radius: 50%;
+            border-top-color: transparent;
+        }
+
+        .power-btn::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: rgba(255, 210, 80, 0.8);
+            border-radius: 1px;
+        }
+
+        .hide-below-768 {
+            display: block;
+        }
+
+        .show-below-768 {
+            display: none;
+        }
+
+        @media (max-width: 767px) {
+            .hide-below-768 {
+                display: none !important;
+            }
+            .show-below-768 {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="scene">
+        <div class="tv-shell">
+            <div class="bezel-outer">
+                <div class="screen">
+                    <div id="crt" class="crt hidden stop-flicker"></div>
+
+                    <div id="pipboy-handler" class="pipboy">
+
+                        <!-- Flicker Consent -->
+                        <div id="consent" class="hide-below-768">
+                            <h3 class="text-center">⚠ CRT Flicker Warning</h3>
+                            <p class="text-center">This site contains flickering effects that may cause discomfort.</p>
+                            <button tabindex="0" class="crt-btn text-center" onclick="setFlicker(true)">Enable
+                                Flicker</button>
+                            <button tabindex="0" class="crt-btn text-center" onclick="setFlicker(false)">Disable
+                                Flicker</button>
+                        </div>
+
+                        <div class="show-below-768">
+                            <h3 class="text-center">⚠ Mobile view work is in progress</h3>
+                            <br />
+                            <p class="text-center">You won’t believe it, but some features might actually work. Unfortunately, I’m ridiculously busy right now to verify or deploy them. So… please admire them from a safe distance in the web-view.</p>
+                        </div>
+
+                        <!-- Boot Screen -->
+                        <div id="boot" class="hide-below-768">
+                            <pre id="bootText"></pre>
+                            <button id="show-resume-btn" tabindex="0" class="crt-btn hide"
+                                onclick="showResumeInfo()">Show Portfolio</button>
+                        </div>
+
+                        <div id="app" class="hidden hide-below-768">
+
+                            <div id="app-header" class="header hide">
+                                <div class="stats">
+                                    <div class="separator left-side"></div>
+                                    <div class="title">Shiva Rao</div>
+                                    <div class="separator right-side"></div>
+                                </div>
+                            </div>
+
+                            <div id="app-content" class="main-content hide">
+                                <nav id="tabs"></nav>
+                                <main id="content"></main>
+                            </div>
+                            <div id="app-footer" class="footer hide">
+                                <div class="container-bottom">
+                                    <div class="separator left-side"></div>
+                                    <div class="pip-controls">
+                                        <a href="resume/resume_shiva_rao.pdf" download class="pip-btn" id="resumeBtn">
+                                            DOWNLOAD RESUME
+                                        </a>
+                                    </div>
+                                    <div class="separator right-side"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="control-bar">
+            <div class="screw"></div>
+            <div class="vents">
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+                <div class="vent"></div>
+            </div>
+            <!-- <div class="power-area">
+                <span class="power-label">Power</span>
+                <div onclick="sayThanksAndGoodBye()" class="power-btn"></div>
+            </div> -->
+            <div class="screw"></div>
+        </div>
+    </div>
+
+    <audio id="click" src="sound/click.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+
+</html>
