@@ -1,0 +1,585 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+/* ===== GLOBAL RESET ===== */
+body {
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* font-family: monospace; */
+    /* color: #0c0; */
+    color: #39ff5a;
+}
+
+main {
+    border: 1px solid #2cff6b;
+    padding: 15px;
+    animation: fade .25s ease-in;
+}
+
+/* ===== PIP-BOY SCREEN (MAIN CONTAINER) ===== */
+.pipboy {
+    position: relative;
+    /* width: 100vw;
+    height: 100vh; */
+    /* padding: 60px; */
+    height: inherit;
+    padding: 40px;
+    box-sizing: border-box;
+    background-image: radial-gradient(#0641217a, #1f51218a);
+    box-shadow: 0 0 5vmin 1vmin #010101 inset;
+    /* animation: colorPulse 8s infinite ease-in-out; */
+    grid-template-rows: auto auto 1fr auto;
+    text-shadow: 0 0 8px rgba(44, 255, 107, .6);
+
+    color: #39ff5a;
+    /* text-shadow:
+        0 0 6px #39ff5a,
+        0 0 12px rgba(57, 255, 90, 0.5); */
+}
+
+.voltage-flicker {
+    animation: phosphor-idle 6s ease-in-out infinite;
+}
+
+/* ===== CRT OVERLAY (SCANLINES + GLOW) ===== */
+#crt {
+    position: absolute;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 1;
+}
+
+.stop-flicker {
+    opacity: 0 !important;
+}
+
+.start-flicker {
+    opacity: 1 !important;
+}
+
+/* ===== SCANLINES (DEFAULT, SAFE) ===== */
+#crt::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+
+    background-image: linear-gradient(transparent,
+            transparent 3px,
+            rgba(0, 0, 0, 0.25));
+    background-size: 100% 4px;
+}
+
+/* ===== SOFT GLOW WAVE (OPTIONAL, NO FLICKER) ===== */
+#crt::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20vh;
+    opacity: 0.35;
+    z-index: 1;
+
+    animation: wave 12s infinite ease-in-out;
+}
+
+/* ===== HIDDEN STATE (USED BY SETTINGS / CONSENT) ===== */
+.hidden {
+    opacity: 0;
+}
+
+/* ===== TEXT CARET ===== */
+p:last-child::after {
+    content: "_";
+    animation: blink 1.2s infinite;
+}
+
+/* ===== GENTLE COLOR BREATHING ===== */
+@keyframes colorPulse {
+
+    0%,
+    100% {
+        color: #0c0;
+    }
+
+    50% {
+        color: #0a0;
+    }
+}
+
+/* ===== GLOW WAVE (VERY SLOW) ===== */
+@keyframes wave {
+    0% {
+        top: -120vh;
+        box-shadow: 0 -10vh 20vh #0c0;
+    }
+
+    100% {
+        top: 200vh;
+        box-shadow: 0 -10vh 20vh #0c0;
+    }
+}
+
+/* ===== CURSOR BLINK ===== */
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+#crt.no-glow::before {
+    display: none;
+}
+
+.hide {
+    display: none !important;
+}
+
+.pip-btn:hover {
+    background: rgba(0, 255, 0, 0.15);
+}
+
+.pip-btn:active {
+    background: rgba(0, 255, 0, 0.25);
+}
+
+.pip-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 255, 0, 0.6);
+    color: #00ff66;
+    font-family: monospace;
+    padding: 6px 12px;
+    font-size: 18px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button {
+    background: transparent;
+    border: 1px solid #2cff6b;
+    color: inherit;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+button.active {
+    background: rgba(44, 255, 107, .2);
+}
+
+button:hover {
+    background: rgba(0, 255, 0, 0.15);
+}
+
+button:active {
+    background: rgba(0, 255, 0, 0.25);
+}
+
+
+/* ===== CRT MASTER SWITCH ===== */
+#crt.disabled {
+    display: none;
+}
+
+/* ===== SCANLINES ONLY MODE ===== */
+#crt.scanlines-only::before {
+    display: none;
+}
+
+/* ===== FULL CRT MODE ===== */
+#crt.full-crt::before {
+    display: block;
+}
+
+/***/
+
+.header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.header .stats {
+    flex: 3;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.header .stats .separator.left-side {
+    background-image: linear-gradient(to bottom, #19ff81, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 3px 5vh;
+    background-position: left;
+}
+
+.header .stats .separator {
+    border-top: 2px solid;
+    flex: 5;
+}
+
+.header .stats .title {
+    font-size: 1.3em;
+    letter-spacing: 6px;
+    margin-top: -10px;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.header .stats .separator.right-side {
+    background-image: linear-gradient(to bottom, #19ff81, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 3px 5vh;
+    background-position: right;
+}
+
+.header>*:not(.stats) {
+    flex: 1;
+    margin: 0 10px;
+    padding: 0 10px 0 0;
+    border-top: 2px solid;
+    background-image: linear-gradient(to bottom, #19ff81, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 3px 5vh;
+    background-position: right;
+}
+
+.footer .container-bottom {
+    display: flex;
+    flex-flow: row nowrap;
+    height: 30px;
+}
+
+.footer .container-bottom .separator.left-side {
+    background-image: linear-gradient(to top, #19ff81, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 3px 5vh;
+    background-position: left;
+}
+
+.footer .container-bottom .separator {
+    flex: 4;
+}
+
+.footer .container-bottom .separator,
+.footer .container-bottom .separator-small {
+    border-bottom: 2px solid;
+    margin-bottom: 15px;
+}
+
+.footer .container-bottom .separator.right-side {
+    background-image: linear-gradient(to top, #19ff81, rgba(0, 0, 0, 0));
+    background-repeat: no-repeat;
+    background-size: 3px 5vh;
+    background-position: right;
+}
+
+.footer .container-bottom .separator {
+    flex: 4;
+}
+
+.footer .container-bottom .separator,
+.footer .container-bottom .separator-small {
+    border-bottom: 2px solid;
+    margin-bottom: 15px;
+}
+
+#app {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    padding: inherit;
+    box-sizing: border-box;
+    right: 0;
+    bottom: 0;
+}
+
+.footer {
+    position: absolute;
+    width: inherit;
+    bottom: 0;
+    box-sizing: border-box;
+    right: 0;
+    padding: inherit;
+}
+
+.pip-controls {
+    margin-top: 5px;
+}
+
+#consent {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 2;
+}
+
+/*-CRT Button CSS-*/
+/* ── BASE BUTTON ── */
+.crt-btn {
+    padding: 6px 12px;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 0.04em;
+    text-align: left;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    position: relative;
+    user-select: none;
+    background: transparent;
+    text-shadow: 0 0 8px rgba(44, 255, 107, .6);
+    background: rgba(0, 255, 0, 0.15);
+    /* color: #39ff5a; */
+    /* text-shadow:
+        0 0 6px #39ff5a,
+        0 0 12px rgba(57, 255, 90, 0.5); */
+    /* animation: phosphor-idle 6s ease-in-out infinite; */
+}
+
+/* ────────────────────────────────────────
+     BIDIRECTIONAL BRACKETS via CSS
+     ::before = left bracket  [
+     ::after  = right bracket ]  (visually mirrors inward)
+  ──────────────────────────────────────── */
+.crt-btn::before,
+.crt-btn::after {
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: inherit;
+    color: inherit;
+    text-shadow: inherit;
+    display: inline-block;
+    transition: transform 0.18s ease;
+}
+
+/* Left-facing bracket → points inward to the right */
+.crt-btn::before {
+    content: '[';
+    margin-right: 4px;
+    transform-origin: right center;
+}
+
+/* Right-facing bracket → points inward to the left
+     scaleX(-1) mirrors it so both brackets face each other ◄ ► */
+.crt-btn::after {
+    content: '[';
+    margin-left: 4px;
+    transform: scaleX(-1);
+    /* transform-origin: left center; */
+    display: inline-block;
+}
+
+/* Hover: brackets push outward */
+.crt-btn:hover::before {
+    transform: translateX(-4px);
+}
+
+.crt-btn:hover::after {
+    transform: scaleX(-1) translateX(-4px);
+}
+
+/* ── ACTIVE / SELECTED STATE ── */
+.crt-btn.active {
+    background-color: #39ff5a;
+    background-image: repeating-linear-gradient(180deg,
+            transparent 0px,
+            transparent 2px,
+            rgba(0, 0, 0, 0.12) 2px,
+            rgba(0, 0, 0, 0.12) 4px);
+    color: #050e05;
+    text-shadow: none;
+    box-shadow:
+        0 0 8px rgba(57, 255, 90, 0.8),
+        0 0 20px rgba(57, 255, 90, 0.4),
+        inset 0 0 10px rgba(0, 0, 0, 0.15);
+    animation: phosphor-active 4s ease-in-out infinite;
+}
+
+.crt-btn.active::before,
+.crt-btn.active::after {
+    text-shadow: none;
+    color: #050e05;
+}
+
+/* Hover glow on inactive */
+/* .crt-btn:hover:not(.active) {
+    text-shadow:
+        0 0 4px #39ff5a,
+        0 0 10px rgba(57, 255, 90, 0.8),
+        0 0 20px rgba(57, 255, 90, 0.3);
+} */
+
+/* ── FLICKER ANIMATIONS ── */
+@keyframes phosphor-idle {
+
+    0%,
+    85%,
+    100% {
+        opacity: 1;
+    }
+
+    88% {
+        opacity: 0.82;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    93% {
+        opacity: 0.75;
+    }
+
+    95% {
+        opacity: 1;
+    }
+}
+
+@keyframes phosphor-active {
+
+    0%,
+    90%,
+    100% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 0.88;
+    }
+
+    94% {
+        opacity: 1;
+    }
+}
+
+.text-center {
+    text-align: center;
+}
+
+/*on click flickering*/
+
+@keyframes tvFlicker {
+    0% {
+        opacity: 1;
+        filter: brightness(1) skewX(0deg) scaleY(1);
+    }
+
+    8% {
+        opacity: 0.1;
+        filter: brightness(8) skewX(0deg) scaleY(0.02);
+    }
+
+    16% {
+        opacity: 0.9;
+        filter: brightness(2) skewX(-1deg) scaleY(1);
+    }
+
+    24% {
+        opacity: 0.05;
+        filter: brightness(10) skewX(0deg) scaleY(0.01);
+    }
+
+    32% {
+        opacity: 1;
+        filter: brightness(1.5) skewX(1deg) scaleY(1);
+    }
+
+    40% {
+        opacity: 0.6;
+        filter: brightness(4) skewX(0deg) scaleY(0.5);
+    }
+
+    52% {
+        opacity: 1;
+        filter: brightness(1.2) skewX(-0.5deg) scaleY(1);
+    }
+
+    68% {
+        opacity: 0.85;
+        filter: brightness(1.5) skewX(0deg) scaleY(1);
+    }
+
+    84% {
+        opacity: 1;
+        filter: brightness(1.1) skewX(0deg) scaleY(1);
+    }
+
+    100% {
+        opacity: 1;
+        filter: brightness(1) skewX(0deg) scaleY(1);
+    }
+}
+
+#app.shaking {
+    animation: tvFlicker 0.35s steps(1, end);
+    transform-origin: center center;
+}
+
+#cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.1em;
+    background: #39ff5a;
+    box-shadow: 0 0 8px rgba(61, 255, 61, 0.6);
+    vertical-align: bottom;
+    animation: blink 0.7s step-end infinite;
+    margin-left: 1px;
+}
+
+#boot {
+    position: relative;
+    z-index: 3;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    height: 100%;
+}
+
+#tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 160px;
+}
+
+#content {
+    width: calc(100% - 170px);
+    overflow: auto;
+    height: 85%;
+    scrollbar-color: #39ff5a #39ff5a;
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #39ff5a; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #39ff5a; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #39ff5a; 
+}
+
+a {
+    color: #39ff5a !important;
+}
